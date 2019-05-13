@@ -18,13 +18,13 @@ class SwooleToPsr
 {
 
     /**
-     * @param \Swoole\Http\Request $swoole_request
-     * @param RequestInterface|null $psr_request
+     * @param \Swoole\Http\Request $SwooleRequest
+     * @param RequestInterface|null $PsrRequest
      * @return RequestInterface
      */
-    public static function ConvertRequest(\Swoole\Http\Request $swoole_request, ?RequestInterface $psr_request = NULL) : RequestInterface
+    public static function ConvertRequest(\Swoole\Http\Request $SwooleRequest, ?RequestInterface $PsrRequest = NULL) : RequestInterface
     {
-        //print_r($swoole_request);
+        //print_r($SwooleRequest);
 //        Swoole\Http\Request Object
 //    (
 //        [fd] => 1
@@ -61,28 +61,28 @@ class SwooleToPsr
 //    [post] =>
 //    [tmpfiles] =>
 //)О
-        //print_r(get_class_methods($swoole_request));
+        //print_r(get_class_methods($SwooleRequest));
 //        Array
 //        (
 //            [0] => rawcontent
 //            [1] => getData
 //    [2] => __destruct
 //)
-        $headers = $swoole_request->header;
-        $method = $swoole_request->server['request_method'];
-        $uri_string = 'http://'.$swoole_request->header['host'].$swoole_request->server['request_uri'];
-        $uri_class = get_class($psr_request->getUri());
-        $psr_request = $psr_request
+        $headers = $SwooleRequest->header;
+        $method = $SwooleRequest->server['request_method'];
+        $uri_string = 'http://'.$SwooleRequest->header['host'].$SwooleRequest->server['request_uri'];
+        $uri_class = get_class($PsrRequest->getUri());
+        $PsrRequest = $PsrRequest
             ->withUri(self::CreateUri($uri_class, $uri_string))
             ->withMethod($method)
             //->withHeaders($headers)
-            ->withQueryParams($swoole_request->get ? : []);//todo ... complete this... take into account post
+            ->withQueryParams($SwooleRequest->get ? : []);//todo ... complete this... take into account post
 
-        return $psr_request;
+        return $PsrRequest;
 
     }
 
-    public static function ConvertResponse(\Swoole\Http\Request $swoole_response, ?ResponseInterface $psr_response = NULL) : ResponseInterface
+    public static function ConvertResponse(\Swoole\Http\Request $SwooleResponse, ?ResponseInterface $PsrResponse = NULL) : ResponseInterface
     {
 
     }
