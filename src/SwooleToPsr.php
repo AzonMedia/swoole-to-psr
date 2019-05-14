@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Azonmedia\SwooleToPsr;
 
+use Guzaba2\Http\Body\Stream;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UriInterface;
@@ -72,11 +73,13 @@ class SwooleToPsr
         $method = $SwooleRequest->server['request_method'];
         $uri_string = 'http://'.$SwooleRequest->header['host'].$SwooleRequest->server['request_uri'];
         $uri_class = get_class($PsrRequest->getUri());
+        $Body = new Stream();
+        $Body->write($SwooleRequest->rawContent());
         $PsrRequest = $PsrRequest
             ->withUri(self::CreateUri($uri_class, $uri_string))
             ->withMethod($method)
             //->withHeaders($headers)
-            ->withQueryParams($SwooleRequest->get ? : []);//todo ... complete this... take into account post
+            ->withQueryParams($SwooleRequest->get ? : [])->withBody($Body);//todo ... complete this... take into account post
 
         return $PsrRequest;
 
