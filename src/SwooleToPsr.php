@@ -71,7 +71,8 @@ class SwooleToPsr
 //)
         $headers = $SwooleRequest->header;
         $method = $SwooleRequest->server['request_method'];
-        $uri_string = 'http://'.$SwooleRequest->header['host'].$SwooleRequest->server['request_uri'];
+        $host = $SwooleRequest->header['host'] ?? 'localhost';//temporary fix
+        $uri_string = 'http://'.$host.$SwooleRequest->server['request_uri'];
         $uri_class = get_class($PsrRequest->getUri());
         $Body = new Stream();
         $Body->write($SwooleRequest->rawContent());
