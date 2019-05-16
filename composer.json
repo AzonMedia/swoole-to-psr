@@ -1,6 +1,6 @@
 {
     "name": "azonmedia/swoole-to-psr",
-    "type": "utility",
+    "type": "library",
     "description": "Utilities to convert between Swoole and PSR request and response",
     "keywords": ["utility","psr","swoole"],
     "homepage": "https://github.com/AzonMedia/swoole-to-psr",
