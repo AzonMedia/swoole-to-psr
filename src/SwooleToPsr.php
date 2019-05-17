@@ -69,7 +69,17 @@ class SwooleToPsr
 //            [1] => getData
 //    [2] => __destruct
 //)
+
         $headers = $SwooleRequest->header;
+//headers may not contain host
+//        Array
+//        (
+//            [content-type] => text/xml
+//                [content-length] => 259
+//    [content-transfer-encoding] => text
+//    [connection] => close
+//)
+
         $method = $SwooleRequest->server['request_method'];
         $host = $SwooleRequest->header['host'] ?? 'localhost';//temporary fix
         $uri_string = 'http://'.$host.$SwooleRequest->server['request_uri'];
