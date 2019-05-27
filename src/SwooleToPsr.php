@@ -89,7 +89,7 @@ class SwooleToPsr
         $PsrRequest = $PsrRequest
             ->withUri(self::CreateUri($uri_class, $uri_string))
             ->withMethod($method)
-            //->withHeaders($headers)
+            ->withHeaders($headers)
             ->withQueryParams($SwooleRequest->get ? : [])->withBody($Body);//todo ... complete this... take into account post
 
         return $PsrRequest;
