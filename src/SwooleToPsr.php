@@ -90,7 +90,8 @@ abstract class SwooleToPsr
         $uri_class = get_class($PsrRequest->getUri());
         $uri = self::CreateUri($uri_class, $uri_string);
         $Body = new Stream();
-        $Body->write($SwooleRequest->rawContent());
+
+        $Body->write((string)$SwooleRequest->rawContent());
 
         $PsrRequest = $PsrRequest
             ->withUri($uri)
