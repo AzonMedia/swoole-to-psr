@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace Azonmedia\SwooleToPsr;
 
 use Guzaba2\Http\Body\Stream;
-use Psr\Http\Message\RequestInterface;
+use Guzaba2\Http\Request as GuzabaRequest;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
+use Swoole\Http\Request as SwooleRequest;
+use Swoole\Http\Response as SwooleResponse;
 
 /**
  * Class SwooleToPsr
@@ -19,11 +22,12 @@ class SwooleToPsr
 {
 
     /**
-     * @param \Swoole\Http\Request $SwooleRequest
-     * @param RequestInterface|null $PsrRequest
-     * @return RequestInterface
+     * @param SwooleRequest $SwooleRequest
+     * @param ServerRequestInterface|null $PsrRequest
+     * @return ServerRequestInterface
+     * @throws \Guzaba2\Base\Exceptions\RunTimeException
      */
-    public static function ConvertRequest(\Swoole\Http\Request $SwooleRequest, ?RequestInterface $PsrRequest = NULL) : RequestInterface
+    public static function ConvertRequest(SwooleRequest $SwooleRequest, ?ServerRequestInterface $PsrRequest = NULL): ServerRequestInterface
     {
         //print_r($SwooleRequest);
 //        Swoole\Http\Request Object
@@ -79,26 +83,58 @@ class SwooleToPsr
 //    [content-transfer-encoding] => text
 //    [connection] => close
 //)
-
         $method = $SwooleRequest->server['request_method'];
+        // TODO check this
         $host = $SwooleRequest->header['host'] ?? 'localhost';//temporary fix
-        $uri_string = 'http://'.$host.$SwooleRequest->server['request_uri'];
+        $uri_string = 'http://' . $host . $SwooleRequest->server['request_uri'];
         $uri_class = get_class($PsrRequest->getUri());
+        $uri = self::CreateUri($uri_class, $uri_string);
         $Body = new Stream();
         $Body->write($SwooleRequest->rawContent());
-        $PsrRequest = $PsrRequest
-            ->withUri(self::CreateUri($uri_class, $uri_string))
-            ->withMethod($method)
-            ->withHeaders($headers)
-            ->withQueryParams($SwooleRequest->get ? : [])->withBody($Body);//todo ... complete this... take into account post
+
+        if (is_null($PsrRequest)) {
+            $PsrRequest = new GuzabaRequest(
+                $method,
+                $uri,
+                $headers,
+                $SwooleRequest->cookie,
+                $SwooleRequest->server,
+                $Body,
+                $SwooleRequest->files
+            );
+        } else {
+            /** @var ServerRequestInterface $PsrRequest */
+            $PsrRequest = $PsrRequest
+                ->withUri(self::CreateUri($uri_class, $uri_string))
+                ->withMethod($method);
+
+            $PsrRequest->withBody($Body);
+            foreach ($headers as $key => $value) {
+                $PsrRequest = $PsrRequest->withHeader($key, $value);
+            }
+
+            if ($PsrRequest instanceof GuzabaRequest) {
+                // TODO add server params, cookies, files
+            }
+        }
+
+
+        // Add GET
+        if ($SwooleRequest->get) {
+            $PsrRequest = $PsrRequest->withQueryParams($SwooleRequest->get ?: []);
+        }
+
+        // Add POST
+        if ($SwooleRequest->post) {
+            $PsrRequest = $PsrRequest->withParsedBody($SwooleRequest->post);
+        }
 
         return $PsrRequest;
-
     }
 
-    public static function ConvertResponse(\Swoole\Http\Request $SwooleResponse, ?ResponseInterface $PsrResponse = NULL) : ResponseInterface
+    public static function ConvertResponse(SwooleResponse $SwooleResponse, ?ResponseInterface $PsrResponse = NULL): ResponseInterface
     {
-
+       // SwooleResponse doesn't have any documented getters
     }
 
     /**
@@ -107,21 +143,21 @@ class SwooleToPsr
      * @param string $uri
      * @return UriInterface
      */
-    public static function CreateUri(string $uri_class, string $uri) : UriInterface
+    public static function CreateUri(string $uri_class, string $uri): UriInterface
     {
 //        if (!is_string($uri) && !method_exists($uri, '__toString')) {
 //            throw new \InvalidArgumentException('Uri must be a string');
 //        }
 
         $parts = parse_url($uri);
-        $scheme = isset($parts['scheme']) ? $parts['scheme'] : '';
-        $user = isset($parts['user']) ? $parts['user'] : '';
-        $pass = isset($parts['pass']) ? $parts['pass'] : '';
-        $host = isset($parts['host']) ? $parts['host'] : '';
-        $port = isset($parts['port']) ? $parts['port'] : null;
-        $path = isset($parts['path']) ? $parts['path'] : '';
-        $query = isset($parts['query']) ? $parts['query'] : '';
-        $fragment = isset($parts['fragment']) ? $parts['fragment'] : '';
+        $scheme = $parts['scheme'] ?? '';
+        $user = $parts['user'] ?? '';
+        $pass = $parts['pass'] ?? '';
+        $host = $parts['host'] ?? '';
+        $port = $parts['port'] ?? null;
+        $path = $parts['path'] ?? '';
+        $query = $parts['query'] ?? '';
+        $fragment = $parts['fragment'] ?? '';
         return new $uri_class($scheme, $host, $port, $path, $query, $fragment, $user, $pass);
     }
 }
