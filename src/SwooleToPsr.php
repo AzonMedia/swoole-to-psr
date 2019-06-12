@@ -96,10 +96,10 @@ abstract class SwooleToPsr
         $PsrRequest = $PsrRequest
             ->withUri($uri)
             ->withMethod($method)
-            ->withCookieParams($SwooleRequest->cookie)
-            ->withQueryParams($SwooleRequest->get)
-            ->withParsedBody($SwooleRequest->post)
-            ->withUploadedFiles($SwooleRequest->files)
+            ->withCookieParams($SwooleRequest->cookie ?? [])
+            ->withQueryParams($SwooleRequest->get ?? [])
+            ->withParsedBody($SwooleRequest->post ?? [])
+            ->withUploadedFiles($SwooleRequest->files ?? [])
             ->withBody($Body);
 
         foreach ($headers as $key => $value) {
