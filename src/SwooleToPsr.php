@@ -100,6 +100,7 @@ abstract class SwooleToPsr
             ->withQueryParams($SwooleRequest->get ?? [])
             ->withParsedBody($SwooleRequest->post ?? [])
             ->withUploadedFiles($SwooleRequest->files ?? [])
+
             ->withBody($Body);
 
         foreach ($headers as $key => $value) {
