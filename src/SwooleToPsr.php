@@ -6,6 +6,7 @@ namespace Azonmedia\SwooleToPsr;
 
 use Guzaba2\Base\Exceptions\RunTimeException;
 use Guzaba2\Http\Body\Stream;
+use Guzaba2\Http\UploadedFile;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
@@ -99,7 +100,7 @@ abstract class SwooleToPsr
             ->withCookieParams($SwooleRequest->cookie ?? [])
             ->withQueryParams($SwooleRequest->get ?? [])
             ->withParsedBody($SwooleRequest->post ?? [])
-            ->withUploadedFiles($SwooleRequest->files ?? [])
+            ->withUploadedFiles($SwooleRequest->files ? UploadedFile::parseUploadedFiles($SwooleRequest->files) : [])
 
             ->withBody($Body);
 
