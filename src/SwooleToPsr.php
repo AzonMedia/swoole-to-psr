@@ -98,8 +98,7 @@ abstract class SwooleToPsr
             ->withCookieParams($SwooleRequest->cookie ?? [])
             ->withQueryParams($SwooleRequest->get ?? [])
             ->withParsedBody($SwooleRequest->post ?? [])
-            ->withUploadedFiles($SwooleRequest->files ?? [])
-
+            ->withUploadedFiles($SwooleRequest->files ? UploadedFile::parseUploadedFiles($SwooleRequest->files) : [])
             ->withBody($Body);
 
         foreach ($headers as $key => $value) {
