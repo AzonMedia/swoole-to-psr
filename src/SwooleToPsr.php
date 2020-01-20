@@ -97,7 +97,7 @@ abstract class SwooleToPsr
             ->withMethod($method)
             ->withCookieParams($SwooleRequest->cookie ?? [])
             ->withQueryParams($SwooleRequest->get ?? [])
-            // ->withParsedBody($SwooleRequest->post ?? []) //do not add a it always expects the body to be url encoded while it may be raw XML or JSON
+             ->withParsedBody($SwooleRequest->post ?? []) //do not add a it always expects the body to be url encoded while it may be raw XML or JSON
             ->withUploadedFiles($SwooleRequest->files ? UploadedFile::parseUploadedFiles($SwooleRequest->files) : [])
             ->withBody($Body);
 
