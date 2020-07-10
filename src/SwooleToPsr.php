@@ -27,7 +27,7 @@ abstract class SwooleToPsr
      */
     public static function ConvertRequest(SwooleRequest $SwooleRequest, ServerRequestInterface $PsrRequest): ServerRequestInterface
     {
-        //print_r($SwooleRequest);
+
 //        Swoole\Http\Request Object
 //    (
 //        [fd] => 1
@@ -64,7 +64,7 @@ abstract class SwooleToPsr
 //    [post] =>
 //    [tmpfiles] =>
 //)О
-        //print_r(get_class_methods($SwooleRequest));
+
 //        Array
 //        (
 //            [0] => rawcontent
