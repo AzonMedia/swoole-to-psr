@@ -197,32 +197,32 @@ class UploadedFile implements UploadedFileInterface
     public function moveTo($target_path)
     {
         if ($this->moved) {
-            throw new RunTimeException('Uploaded file already moved');
+            throw new RunTimeException('Uploaded file already moved.');
         }
 
         $target_is_stream = strpos($target_path, '://') > 0;
         if (!$target_is_stream && !is_writable(dirname($target_path))) {
-            throw new InvalidArgumentException('Upload target path is not writable');
+            throw new InvalidArgumentException('Upload target path is not writable.');
         }
 
         if ($target_is_stream) {
             if (!copy($this->file, $target_path)) {
-                throw new RunTimeException(sprintf('Error moving uploaded file %1$s to %2$s', $this->name, $target_path));
+                throw new RunTimeException(sprintf('Error moving uploaded file %1$s to %2$s.', $this->name, $target_path));
             }
             if (!unlink($this->file)) {
-                throw new RunTimeException(sprintf('Error removing uploaded file %1$s', $this->name));
+                throw new RunTimeException(sprintf('Error removing uploaded file %1$s.', $this->name));
             }
         } elseif ($this->sapi) {
             if (!is_uploaded_file($this->file)) {
-                throw new RunTimeException(sprintf('%1$s is not a valid uploaded file', $this->file));
+                throw new RunTimeException(sprintf('%1$s is not a valid uploaded file.', $this->file));
             }
 
             if (!move_uploaded_file($this->file, $target_path)) {
-                throw new RunTimeException(sprintf('Error moving uploaded file %1$s to %2$s', $this->name, $target_path));
+                throw new RunTimeException(sprintf('Error moving uploaded file %1$s to %2$s.', $this->name, $target_path));
             }
         } else {
             if (!rename($this->file, $target_path)) {
-                throw new RunTimeException(sprintf('Error moving uploaded file %1$s to %2$s', $this->name, $target_path));
+                throw new RunTimeException(sprintf('Error moving uploaded file %1$s to %2$s.', $this->name, $target_path));
             }
         }
 
